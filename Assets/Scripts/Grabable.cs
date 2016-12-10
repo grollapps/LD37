@@ -34,7 +34,7 @@ public class Grabable : VRTK_InteractableObject {
         VRTK_ControllerActions actions = currentTouchingObject.GetComponent<VRTK_ControllerActions>();
         if (actions != null) {
             //x = duration, y = force
-            Debug.Log("rumble " + rumbleOnTouch);
+            //Debug.Log("rumble " + rumbleOnTouch);
             actions.TriggerHapticPulse((ushort)rumbleOnTouch.y, rumbleOnTouch.x, 1.5f);
         } else {
             Debug.Log("Actions null");
