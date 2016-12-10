@@ -38,9 +38,10 @@ public class ForceReceiver : MonoBehaviour {
     }
 
     /// <summary>
-    /// Send a force from another object into this object
+    /// Send a force from another object into this object. Calculates fragments that may result
+    /// but does not move anything.
     /// </summary>
-    public void takeHit(Vector3 forceDir, float force, float distFromSrc) {
+    public void calcFrag(Vector3 forceDir, float force, float distFromSrc) {
         //Debug.Log("Hit taken: force=" + force + " dist=" + distFromSrc);
         this.force = forceDir * (force / distFromSrc);
         this.forcePos = transform.position;
@@ -50,9 +51,19 @@ public class ForceReceiver : MonoBehaviour {
             //this object is breakable. Use the force to break it up.
             float minPwrToBreak = brb.getMinActivePwr();
             float falloffDist = Mathf.Sqrt(force / minPwrToBreak);
-            Debug.Log("Falloff dist=" + falloffDist);
-            brb.breakItDown(falloffDist - distFromSrc);
+            Debug.Log("Falloff dist=" + falloffDist + ", distFromSrc=" + distFromSrc/2);
+            brb.breakItDown(falloffDist - distFromSrc/2);
         }
+
+    }
+
+    /// <summary>
+    /// Send a force from another object into this object
+    /// </summary>
+    public void takeHit(Vector3 forceDir, float force, float distFromSrc) {
+        //Debug.Log("Hit taken: force=" + force + " dist=" + distFromSrc);
+        this.force = forceDir * (force / distFromSrc);
+        this.forcePos = transform.position;
 
         forceCalculated = true; //TODO
     }

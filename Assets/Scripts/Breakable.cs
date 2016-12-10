@@ -7,9 +7,6 @@ public class Breakable : MonoBehaviour {
     private GameObject piecePrefab;
 
     [SerializeField]
-    private GameObject solidPrefab;
-
-    [SerializeField]
     private float minActivePwr = 25f;
 
     private bool isDivided = false;
@@ -26,14 +23,14 @@ public class Breakable : MonoBehaviour {
     }
 
     void Update() {
-        debug_event();
+        //debug_event();
     }
 
     private void debug_event() {
         if (Input.GetKey(KeyCode.D) && !isDivided) {
             Debug.Log("Dividing");
-            //divideAll();
-            breakItDown2(2);
+            divideAll();
+            //breakItDownByLayer(2);
             isDivided = true;
         }
     }
@@ -57,7 +54,8 @@ public class Breakable : MonoBehaviour {
         float myx = myC.bounds.extents.x;
         float myy = myC.bounds.extents.y;
         float myz = myC.bounds.extents.z;
-        Vector3 frontCorner =  transform.position + new Vector3(myx, -myy, myz);
+        //Vector3 frontCorner =  transform.position + new Vector3(myx, -myy, myz);
+        Vector3 frontCorner =  new Vector3(myx, -myy, myz);
 
         int maxXStep = Mathf.CeilToInt(myx * 2 / xSize);
         int maxYStep = Mathf.CeilToInt(myy * 2 / ySize);
@@ -104,38 +102,49 @@ public class Breakable : MonoBehaviour {
 
     //assume pen is +z
     public void breakItDown(float penDist) {
-        Vector3 pos = transform.position;
-        transform.position = new Vector3(pos.x, pos.y, pos.z - 25);
         int numPenLayers = Mathf.Min(spawnLayers.Length, Mathf.CeilToInt(penDist / zSize)); //round up/down/all around?
-        for (int z = 0; z < numPenLayers; z++) {
-            Vector3[] spawnPts = spawnLayers[z];
-            for (int i = 0; i < spawnPts.Length; i++) {
-                GameObject go = (GameObject)Instantiate(piecePrefab, spawnPts[i], transform.rotation);
-            }
-        }
+        Debug.Log("NumPenLayers=" + numPenLayers);
+        breakItDownByLayer(numPenLayers);
     }
 
-    public void breakItDown2(int numPenLayers) {
+    private void breakItDownByLayer(int numPenLayers) {
         Vector3 pos = transform.position;
         GameObject parent = new GameObject();
         parent.transform.position = transform.position;
+        int pieceCount = numPenLayers * spawnLayers[0].Length;
+        GameObject[] pieces = new GameObject[pieceCount];
+
+        //make pieces
+        int pidx = 0;
         for (int z = 0; z < numPenLayers; z++) {
             Vector3[] spawnPts = spawnLayers[z];
             for (int i = 0; i < spawnPts.Length; i++) {
                 GameObject go = (GameObject)Instantiate(piecePrefab, spawnPts[i], Quaternion.identity);
-                go.transform.SetParent(parent.transform, true);
+                go.transform.SetParent(parent.transform, false);
+                pieces[pidx++] = go;
             }
         }
+
+        //make solid
         float xscale = transform.localScale.x;
         float yscale = transform.localScale.y;
         float zscale = transform.localScale.z;
         if (numPenLayers < zscale) {
-            Vector3 spos = new Vector3(pos.x, pos.y, pos.z - (numPenLayers-1) * zSize);
-            GameObject solid = (GameObject)Instantiate(gameObject, spos, transform.rotation);
-            solid.transform.localScale = new Vector3(xscale, yscale, zscale - numPenLayers*zSize); //assume whole number of scale units per block
-            solid.transform.localPosition = spos;
-            solid.transform.SetParent(parent.transform, true);
-            Debug.Break();
+            Vector3 startOffset = new Vector3(0,0, -(numPenLayers) * zSize);
+            GameObject scaleParent = new GameObject();
+            scaleParent.transform.localScale = new Vector3(1, 1, zscale);
+            scaleParent.transform.position = gameObject.transform.position + new Vector3(0,0,zscale/2); //edge 
+
+            GameObject solid = (GameObject)Instantiate(gameObject, Vector3.zero, Quaternion.identity);
+            solid.transform.SetParent(scaleParent.transform, true);
+            solid.transform.position = transform.position;
+
+            float newScale = zscale - numPenLayers * zSize;
+            scaleParent.transform.localScale = new Vector3(1, 1, newScale); //assume whole number of scale units per block
+            solid.transform.localRotation = transform.localRotation;
+            scaleParent.transform.DetachChildren();
+            //solid.transform.SetParent(parent.transform, true); //doesn't work correctly - moves obj over?
+            Destroy(scaleParent);
         }
 
         parent.transform.localRotation = transform.rotation; //match to original rotation of the object we are replacing
