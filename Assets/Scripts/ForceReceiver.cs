@@ -37,11 +37,23 @@ public class ForceReceiver : MonoBehaviour {
         rb.AddForceAtPosition(force, forcePos);
     }
 
+    /// <summary>
+    /// Send a force from another object into this object
+    /// </summary>
     public void takeHit(Vector3 forceDir, float force, float distFromSrc) {
         //Debug.Log("Hit taken: force=" + force + " dist=" + distFromSrc);
-        //TODO
         this.force = forceDir * (force / distFromSrc);
         this.forcePos = transform.position;
+
+        Breakable brb = GetComponent<Breakable>();
+        if (brb != null) {
+            //this object is breakable. Use the force to break it up.
+            float minPwrToBreak = brb.getMinActivePwr();
+            float falloffDist = Mathf.Sqrt(force / minPwrToBreak);
+            Debug.Log("Falloff dist=" + falloffDist);
+            brb.breakItDown(falloffDist - distFromSrc);
+        }
+
         forceCalculated = true; //TODO
     }
 }
