@@ -27,7 +27,7 @@ public class Breakable : MonoBehaviour {
     }
 
     private void debug_event() {
-        if (Input.GetKey(KeyCode.D) && !isDivided) {
+        if (Input.GetKey(KeyCode.Keypad0) && !isDivided) {
             Debug.Log("Dividing");
             divideAll();
             //breakItDownByLayer(2);
@@ -102,7 +102,7 @@ public class Breakable : MonoBehaviour {
 
     //assume pen is +z
     public void breakItDown(float penDist) {
-        int numPenLayers = Mathf.Min(spawnLayers.Length, Mathf.CeilToInt(penDist / zSize)); //round up/down/all around?
+        int numPenLayers = Mathf.Min(spawnLayers.Length, Mathf.CeilToInt(Mathf.Abs(penDist) / zSize)); //round up/down/all around?
         Debug.Log("NumPenLayers=" + numPenLayers);
         breakItDownByLayer(numPenLayers);
     }
@@ -112,6 +112,7 @@ public class Breakable : MonoBehaviour {
         GameObject parent = new GameObject();
         parent.transform.position = transform.position;
         int pieceCount = numPenLayers * spawnLayers[0].Length;
+        Debug.Log("Piececount=" + pieceCount);
         GameObject[] pieces = new GameObject[pieceCount];
 
         //make pieces

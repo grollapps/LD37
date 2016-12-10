@@ -22,7 +22,9 @@ public class Grabable : VRTK_InteractableObject {
         //rumble appears to not be implemented yet
         VRTK_ControllerActions actions = currentGrabbingObject.GetComponent<VRTK_ControllerActions>();
         if (actions != null) {
-            actions.TriggerHapticPulse((ushort)rumbleOnGrab.x, rumbleOnGrab.y, 0);
+            //actions.TriggerHapticPulse((ushort)rumbleOnGrab.y, rumbleOnGrab.x, 0.001f); //TODO only trigger on grab
+        } else {
+            Debug.Log("Actions null");
         }
     }
 
@@ -31,7 +33,11 @@ public class Grabable : VRTK_InteractableObject {
         //Debug.Log("Start touching " + currentTouchingObject);
         VRTK_ControllerActions actions = currentTouchingObject.GetComponent<VRTK_ControllerActions>();
         if (actions != null) {
-            actions.TriggerHapticPulse((ushort)rumbleOnTouch.x, rumbleOnTouch.y, 0);
+            //x = duration, y = force
+            Debug.Log("rumble " + rumbleOnTouch);
+            actions.TriggerHapticPulse((ushort)rumbleOnTouch.y, rumbleOnTouch.x, 1.5f);
+        } else {
+            Debug.Log("Actions null");
         }
     }
 }

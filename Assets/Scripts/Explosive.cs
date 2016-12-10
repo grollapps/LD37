@@ -21,15 +21,16 @@ public class Explosive : MonoBehaviour {
     }
 
     public void debug_event() {
-        if (Input.GetKey(KeyCode.Space)) {
+        if (!hasExploded && Input.GetKey(KeyCode.Space)) {
             detonate();
-            hasExploded = true;
         }
     }
 
     public void detonate() {
         if (!hasExploded) {
+            hasExploded = true;
             if (!fragCalculated) {
+                fragCalculated = true;
                 Debug.Log("CalcFrag: " + gameObject.name);
                 Collider[] bigHits = Physics.OverlapSphere(transform.position, effectRadius);
                 for (int i = 0; i < bigHits.Length; i++) {
