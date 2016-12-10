@@ -23,14 +23,11 @@ public class Inventory : MonoBehaviour {
         for(int i = 0; i < inventoryPrefabs.Count; i++) {
             GameObject inv = Instantiate(inventoryPrefabs[i]);
             GameObject slot = itemSlotGameObjects[i];
-            //GameObject scaleHolder = new GameObject();
-            //scaleHolder.name = inv.name + " parent";
             Quaternion rot = slot.transform.rotation;
             Vector3 loc = slot.transform.position;
             inv.transform.SetParent(slot.transform, true);
             inv.transform.rotation = rot * inv.transform.rotation;
             inv.transform.position = loc;
-            //scaleHolder.transform.SetParent(slot.transform, false);
         }
 
 	}
