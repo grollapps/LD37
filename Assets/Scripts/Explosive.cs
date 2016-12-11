@@ -68,10 +68,10 @@ public class Explosive : MonoBehaviour {
                 GameObject go = bigHits[i].gameObject;
                 ForceReceiver frec = go.GetComponent<ForceReceiver>();
                 if (frec != null) {
-                    Vector3 dirTowardsObj = go.transform.position - this.transform.position;
-                    float dist = dirTowardsObj.magnitude;
-                    dirTowardsObj /= dist;
-                    List<Collider> frags = frec.calcFrag(dirTowardsObj, blastPressure, dist);
+                    Vector3 dirTowardsObj = (go.transform.position - this.transform.position).normalized;
+                    //float dist = dirTowardsObj.magnitude;
+                    //dirTowardsObj /= dist;
+                    List<Collider> frags = frec.calcFrag(dirTowardsObj, blastPressure, this.transform.position);
                     affectedColliders.AddRange(frags);
                 }
                 if (i + 1 % maxLoopSize == 0) {

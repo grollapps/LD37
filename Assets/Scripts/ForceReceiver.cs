@@ -57,7 +57,7 @@ public class ForceReceiver : MonoBehaviour {
     /// Send a force from another object into this object. Calculates fragments that may result
     /// but does not move anything.
     /// </summary>
-    public List<Collider> calcFrag(Vector3 forceDir, float force, float distFromSrc) {
+    public List<Collider> calcFrag(Vector3 forceDir, float force, Vector3 forceOrigin) {
         //Debug.Log("Hit taken: force=" + force + " dist=" + distFromSrc);
         //this.force = forceDir * (force / distFromSrc);
         //this.forcePos = transform.position;
@@ -74,30 +74,30 @@ public class ForceReceiver : MonoBehaviour {
             }
         }
 
-        Debug.LogError("TODO");
-        //if (brb != null) {
-        //    //this object is breakable. Use the force to break it up.
-        //    float minPwrToBreak = brb.getMinActivePwr();
-        //    float falloffDist = Mathf.Sqrt(force / minPwrToBreak);
-        //    //Debug.Log("Falloff dist=" + falloffDist + ", distFromSrc=" + distFromSrc/2);
-        //    GameObject[] fragments = brb.breakItDown(falloffDist - distFromSrc / 2);
-        //    if (fragments != null) {
-        //        for (int i = 0; i < fragments.Length; i++) {
-        //            if (fragments[i] != null) {
-        //                ForceReceiver subFr = fragments[i].GetComponent<ForceReceiver>();
-        //                if (subFr != null) {
-        //                    List<Collider> subFrC = subFr.calcFrag(forceDir, force, distFromSrc);
-        //                    fragResults.AddRange(subFrC);
-        //                }
-        //            }
-        //        }
-        //    } else {
-        //        fragResults.Add(gameObject.GetComponent<Collider>()); //breakable didn't break
-        //    }
-        //} else {
-        //    //one fragment: this object
-        //    fragResults.Add(gameObject.GetComponent<Collider>());
-        //}
+        if (brb != null) {
+            //this object is breakable. Use the force to break it up.
+            float minPwrToBreak = brb.getMinActivePwr();
+            float falloffDist = Mathf.Sqrt(force / minPwrToBreak);
+            //Debug.Log("Falloff dist=" + falloffDist + ", distFromSrc=" + distFromSrc/2);
+            //GameObject[] fragments = brb.breakItDown(falloffDist - distFromSrc / 2);
+            List<GameObject> fragments = brb.breakItDown(forceDir, force, forceOrigin);
+            if (fragments != null) {
+                for (int i = 0; i < fragments.Count; i++) {
+                    if (fragments[i] != null) {
+                        ForceReceiver subFr = fragments[i].GetComponent<ForceReceiver>();
+                        if (subFr != null) {
+                            List<Collider> subFrC = subFr.calcFrag(forceDir, force, forceOrigin);
+                            fragResults.AddRange(subFrC);
+                        }
+                    }
+                }
+            } else {
+                fragResults.Add(gameObject.GetComponent<Collider>()); //breakable didn't break
+            }
+        } else {
+            //one fragment: this object
+            fragResults.Add(gameObject.GetComponent<Collider>());
+        }
 
         return fragResults;
 
