@@ -28,6 +28,7 @@ public class ForceReceiver : MonoBehaviour {
     void Update() {
 
         if (used && !cashedOut) {
+            cashedOut = true;
             cashout();
         }
     }
@@ -39,7 +40,7 @@ public class ForceReceiver : MonoBehaviour {
                 applyForce(force, forcePos); //TODO does the force pos need to change per frame?
                 numForceFrames--;
             } else {
-                forceCalculated = false;
+                //forceCalculated = false;
                 used = true;
             }
         }

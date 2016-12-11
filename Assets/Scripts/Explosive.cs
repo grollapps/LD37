@@ -8,6 +8,8 @@ public class Explosive : MonoBehaviour {
     private float effectRadius = 10.0f;
     [SerializeField]
     private float blastPressure = 100.0f;
+    [SerializeField]
+    private GameObject particleSystemObj;
 
     private List<Collider> affectedColliders = new List<Collider>(1024);
     private bool fragCalculated = false;
@@ -23,9 +25,9 @@ public class Explosive : MonoBehaviour {
     }
 
     //public void debug_event() {
-        //if (!hasExploded && Input.GetKey(KeyCode.Space)) {
-            //detonate();
-        //}
+    //if (!hasExploded && Input.GetKey(KeyCode.Space)) {
+    //detonate();
+    //}
     //}
 
     public void preDetonate() {
@@ -43,9 +45,16 @@ public class Explosive : MonoBehaviour {
             hasExploded = true;
             //this will now find all new pieces
             Debug.Log("Explode: " + gameObject.name);
+            if (particleSystemObj != null) {
+                GameObject psObj = (GameObject)Instantiate(particleSystemObj);
+                psObj.transform.position = transform.position;
+                ParticleSystem p = psObj.GetComponent<ParticleSystem>();
+                p.Play();
+                Destroy(psObj, p.startLifetime + p.duration + 0.5f);
+            }
             StartCoroutine(doBlast());
             Debug.Log("ExplodeCalcDone");
-            //            Destroy(gameObject);
+            Destroy(gameObject);
         }
 
     }
@@ -59,7 +68,6 @@ public class Explosive : MonoBehaviour {
                 GameObject go = bigHits[i].gameObject;
                 ForceReceiver frec = go.GetComponent<ForceReceiver>();
                 if (frec != null) {
-                    //affectedColliders.Add(bigHits[i]); //a breakable will transmit force only to its subfrags
                     Vector3 dirTowardsObj = go.transform.position - this.transform.position;
                     float dist = dirTowardsObj.magnitude;
                     dirTowardsObj /= dist;
@@ -74,18 +82,10 @@ public class Explosive : MonoBehaviour {
     }
 
     private IEnumerator doBlast() {
-        //Collider[] hits = Physics.OverlapSphere(transform.position, effectRadius);
         int numBigguns = affectedColliders.Count;
         if (numBigguns > 0) {
-           // for (int c = 0; c < numBigguns; c++) {
-           //     GameObject parent = affectedColliders[c].gameObject;
-           //     Collider[] chillun = parent.GetComponentsInChildren<Collider>();
-           //     affectedColliders.AddRange(chillun);
-           // }
             int maxLoopSize = Mathf.Clamp(affectedColliders.Count / 10, 25, 100);
-            //for (int i = 0; i < hits.Length; i++) {
             for (int i = 0; i < affectedColliders.Count; i++) {
-                //GameObject go = hits[i].gameObject;
                 GameObject go = affectedColliders[i].gameObject;
                 ForceReceiver frec = go.GetComponent<ForceReceiver>();
                 if (frec != null) {
@@ -94,12 +94,11 @@ public class Explosive : MonoBehaviour {
                     dirTowardsObj /= dist;
                     frec.takeHit(dirTowardsObj, blastPressure, dist);
                 }
-                if (i+1 % maxLoopSize == 0) {
+                if (i + 1 % maxLoopSize == 0) {
                     yield return null;
                 }
             }
             for (int i = 0; i < affectedColliders.Count; i++) {
-                //GameObject go = hits[i].gameObject;
                 GameObject go = affectedColliders[i].gameObject;
                 ForceReceiver frec = go.GetComponent<ForceReceiver>();
                 if (frec != null) {

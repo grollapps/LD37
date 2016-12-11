@@ -11,6 +11,9 @@ public class ScoreTracker : MonoBehaviour {
 
     private static ScoreTracker instance;
 
+    private float lastUpdateTime = 0;
+    private float updateInterval = 0.3f;
+
     private float cash = 1000;
     private float exp = 0;
 
@@ -34,9 +37,12 @@ public class ScoreTracker : MonoBehaviour {
         expTextValue.text = exp.ToString("F0");
         cashTextValue.text = "$"+cash.ToString("F2");
     }
-	
+
 	void Update () {
-	
+        if (Time.time - lastUpdateTime > updateInterval) {
+            lastUpdateTime = Time.time;
+            updateTexts();
+        }
 	}
 
     public void addCashAndExp(float cashVal, float expVal) {

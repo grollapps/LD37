@@ -33,17 +33,19 @@ public class Breakable : MonoBehaviour {
     }
 
     void Update() {
-        //debug_event();
+        debug_event();
     }
 
-    //private void debug_event() {
-        //if (Input.GetKey(KeyCode.Keypad0) && !isDivided) {
-            //Debug.Log("Dividing");
-            //divideAll();
-            //breakItDownByLayer(2);
-            //isDivided = true;
-        //}
-    //}
+    bool isDivided = false;
+    private void debug_event() {
+        if (Input.GetKey(KeyCode.Keypad0) && !isDivided) {
+            Debug.Log("Dividing");
+            divideAll();
+            breakItDownByLayer(2);
+            isDivided = true;
+        Debug.Break();
+        }
+    }
 
     private void computeDivisions() {
         if (layersComputed) {
@@ -143,6 +145,7 @@ public class Breakable : MonoBehaviour {
         GameObject parent = new GameObject();
         parent.name = "breakable parent";
         parent.transform.position = transform.position;
+        parent.transform.rotation = transform.rotation;
         int pieceCount = numPenLayers * spawnLayers[0].Length;
         //Debug.Log("Piececount=" + pieceCount);
         pieces = new GameObject[pieceCount];
@@ -167,23 +170,27 @@ public class Breakable : MonoBehaviour {
             Vector3 startOffset = new Vector3(0, 0, -(numPenLayers) * zSize);
             GameObject scaleParent = new GameObject();
             scaleParent.transform.localScale = new Vector3(1, 1, zscale);
-            scaleParent.transform.position = gameObject.transform.position + new Vector3(0, 0, zscale / 2); //edge 
+            scaleParent.transform.rotation = transform.rotation;
+            //scaleParent.transform.position = gameObject.transform.position + new Vector3(0, 0, zscale / 2); //edge 
 
             GameObject solid = (GameObject)Instantiate(gameObject, Vector3.zero, Quaternion.identity);
             solid.GetComponent<Rigidbody>().isKinematic = true;
             solid.transform.SetParent(scaleParent.transform, true);
-            solid.transform.position = transform.position;
+            //solid.transform.SetParent(scaleParent.transform, false);
+            //solid.transform.position = transform.position;
+            solid.transform.position = scaleParent.transform.position + new Vector3(0, 0, zscale / 2);
 
             float newScale = zscale - numPenLayers * zSize;
             scaleParent.transform.localScale = new Vector3(1, 1, newScale); //assume whole number of scale units per block
-            solid.transform.localRotation = transform.localRotation;
+            solid.transform.position = Vector3.zero;
+            //solid.transform.localRotation = transform.localRotation;
             scaleParent.transform.DetachChildren();
             solid.GetComponent<Rigidbody>().isKinematic = false; //
             //solid.transform.SetParent(parent.transform, true); //doesn't work correctly - moves obj over?
             Destroy(scaleParent);
         }
 
-        parent.transform.localRotation = transform.rotation; //match to original rotation of the object we are replacing
+        //parent.transform.localRotation = transform.rotation; //match to original rotation of the object we are replacing
         for (int i = 0; i < pieces.Length; i++) {
             if (pieces[i] != null) {
                 pieces[i].GetComponent<Rigidbody>().isKinematic = false;
