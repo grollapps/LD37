@@ -22,13 +22,16 @@ public class InventoryItem : VRTK_InteractableObject {
     public override void StartUsing(GameObject currentUsingObject) {
         ItemTracker itt = ItemTracker.getInstance();
         if (itt.useItem(gameObject)) {
-            base.StartUsing(currentUsingObject);
+            //base.StartUsing(currentUsingObject);
             Debug.Log("Inventory item use: " + gameObject.name);
             itemInstance = (GameObject)Instantiate(itemPrefab);
             //transition from inventory item to actual item in hand
             itt.stopUsingItem();
+            //StopUsing(currentUsingObject);
             Grabable g = itemInstance.GetComponent<Grabable>();
+            itemInstance.transform.position = currentUsingObject.transform.position;
             g.Grabbed(currentUsingObject);
+            itt.addUngrabbedListener(g.Ungrabbed);
         } else {
             Debug.Log("Can't use item: " + gameObject.name);
         }
@@ -37,10 +40,11 @@ public class InventoryItem : VRTK_InteractableObject {
     public override void StopUsing(GameObject previousUsingObject) {
         ItemTracker itt = ItemTracker.getInstance();
         itt.stopUsingItem();
-        base.StopUsing(previousUsingObject);
+        //base.StopUsing(previousUsingObject);
         Debug.Log("Inventory item stop using: " + gameObject.name);
         if (itemInstance != null) {
-            itemInstance.transform.SetParent(null, true);
+            //itemInstance.transform.SetParent(null, true);
+            itemInstance.transform.parent = null;
         }
     }
 }
