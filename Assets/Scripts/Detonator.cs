@@ -6,10 +6,19 @@ public class Detonator : VRTK_InteractableObject {
 
     private bool hasFired = false;
 
+    [SerializeField]
+    private float timeBetweenFires = 3.0f;
+
+    private float lastFireTime = 0f;
+
     public override void StartUsing(GameObject currentUsingObject) {
         //base.StartUsing(currentUsingObject);
         if (!hasFired) {
             fire();
+        } else if (Time.time - lastFireTime > timeBetweenFires) {
+            hasFired = false;
+            fire();
+            lastFireTime = Time.time;
         }
     }
 

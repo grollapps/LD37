@@ -278,6 +278,7 @@ public class Breakable : MonoBehaviour {
 
     public void cleanup() {
         pieces.Clear();
+        fullComputed = false;
     }
 
     //private void breakItDownByLayer(int numPenLayers) {
