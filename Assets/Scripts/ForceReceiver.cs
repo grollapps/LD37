@@ -74,29 +74,30 @@ public class ForceReceiver : MonoBehaviour {
             }
         }
 
-        if (brb != null) {
-            //this object is breakable. Use the force to break it up.
-            float minPwrToBreak = brb.getMinActivePwr();
-            float falloffDist = Mathf.Sqrt(force / minPwrToBreak);
-            //Debug.Log("Falloff dist=" + falloffDist + ", distFromSrc=" + distFromSrc/2);
-            GameObject[] fragments = brb.breakItDown(falloffDist - distFromSrc / 2);
-            if (fragments != null) {
-                for (int i = 0; i < fragments.Length; i++) {
-                    if (fragments[i] != null) {
-                        ForceReceiver subFr = fragments[i].GetComponent<ForceReceiver>();
-                        if (subFr != null) {
-                            List<Collider> subFrC = subFr.calcFrag(forceDir, force, distFromSrc);
-                            fragResults.AddRange(subFrC);
-                        }
-                    }
-                }
-            } else {
-                fragResults.Add(gameObject.GetComponent<Collider>()); //breakable didn't break
-            }
-        } else {
-            //one fragment: this object
-            fragResults.Add(gameObject.GetComponent<Collider>());
-        }
+        Debug.LogError("TODO");
+        //if (brb != null) {
+        //    //this object is breakable. Use the force to break it up.
+        //    float minPwrToBreak = brb.getMinActivePwr();
+        //    float falloffDist = Mathf.Sqrt(force / minPwrToBreak);
+        //    //Debug.Log("Falloff dist=" + falloffDist + ", distFromSrc=" + distFromSrc/2);
+        //    GameObject[] fragments = brb.breakItDown(falloffDist - distFromSrc / 2);
+        //    if (fragments != null) {
+        //        for (int i = 0; i < fragments.Length; i++) {
+        //            if (fragments[i] != null) {
+        //                ForceReceiver subFr = fragments[i].GetComponent<ForceReceiver>();
+        //                if (subFr != null) {
+        //                    List<Collider> subFrC = subFr.calcFrag(forceDir, force, distFromSrc);
+        //                    fragResults.AddRange(subFrC);
+        //                }
+        //            }
+        //        }
+        //    } else {
+        //        fragResults.Add(gameObject.GetComponent<Collider>()); //breakable didn't break
+        //    }
+        //} else {
+        //    //one fragment: this object
+        //    fragResults.Add(gameObject.GetComponent<Collider>());
+        //}
 
         return fragResults;
 
