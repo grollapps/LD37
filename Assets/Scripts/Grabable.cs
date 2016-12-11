@@ -22,7 +22,7 @@ public class Grabable : MonoBehaviour {
         GameObject grabber = ((VRTK_ControllerEvents)sender).gameObject;
         if (testCollision(grabber)) {
             Grabbed(grabber);
-            }
+        }
     }
     public void Ungrabbed(object sender, ControllerInteractionEventArgs e) {
         ItemTracker.getInstance().removeUngrabbedListener(this.Ungrabbed);

@@ -40,7 +40,6 @@ public class InventoryItem : VRTK_InteractableObject {
         //base.StopUsing(previousUsingObject);
         Debug.Log("Inventory item stop using: " + gameObject.name);
         if (itemInstance != null) {
-            //itemInstance.transform.SetParent(null, true);
             itemInstance.transform.parent = null;
         }
     }

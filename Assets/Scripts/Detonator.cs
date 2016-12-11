@@ -25,6 +25,12 @@ public class Detonator : VRTK_InteractableObject {
             for (int i = 0; i < exps.Length; i++) {
                 Explosive e = exps[i].GetComponent<Explosive>();
                 if (e != null) {
+                    e.preDetonate();
+                }
+            }
+            for (int i = 0; i < exps.Length; i++) {
+                Explosive e = exps[i].GetComponent<Explosive>();
+                if (e != null) {
                     e.detonate();
                 }
             }

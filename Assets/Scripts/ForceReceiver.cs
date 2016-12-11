@@ -4,6 +4,9 @@ using System.Collections;
 public class ForceReceiver : MonoBehaviour {
 
     [SerializeField]
+    private Breakable.ObjType objType = Breakable.ObjType.MED;
+
+    [SerializeField]
     private int numForceFrames = 4;
     private int remainingForceFrames;
 
@@ -51,7 +54,7 @@ public class ForceReceiver : MonoBehaviour {
             //this object is breakable. Use the force to break it up.
             float minPwrToBreak = brb.getMinActivePwr();
             float falloffDist = Mathf.Sqrt(force / minPwrToBreak);
-            Debug.Log("Falloff dist=" + falloffDist + ", distFromSrc=" + distFromSrc/2);
+            //Debug.Log("Falloff dist=" + falloffDist + ", distFromSrc=" + distFromSrc/2);
             brb.breakItDown(falloffDist - distFromSrc/2);
         }
 

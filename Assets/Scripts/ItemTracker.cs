@@ -10,9 +10,11 @@ public class ItemTracker : MonoBehaviour {
     private GameObject usingItem;
     private bool isUsingItem = false;
 
-    private GameObject controllerGo;
+    private GameObject controllerGo1;
+    private GameObject controllerGo2;
 
-    private VRTK_ControllerEvents controller;
+    private VRTK_ControllerEvents controller1;
+    private VRTK_ControllerEvents controller2;
 
 
 
@@ -22,9 +24,13 @@ public class ItemTracker : MonoBehaviour {
     }
 
     private void initController() {
-        controllerGo = GameObject.Find("Controller (left)"); //TODO both hands
-        if (controllerGo != null) {
-            controller = controllerGo.GetComponent<VRTK_ControllerEvents>();
+        controllerGo1 = GameObject.Find("Controller (left)");
+        controllerGo2 = GameObject.Find("Controller (right)");
+        if (controllerGo1 != null) {
+            controller1 = controllerGo1.GetComponent<VRTK_ControllerEvents>();
+        }
+        if (controllerGo2 != null) {
+            controller2 = controllerGo2.GetComponent<VRTK_ControllerEvents>();
         }
     }
 
@@ -39,33 +45,48 @@ public class ItemTracker : MonoBehaviour {
 	void Update () {
 	}
 
-    public void addGrabbedListener(ControllerInteractionEventHandler grabHandler) {
-        if (controller == null) {
+    private void checkControllers() {
+        if (controller1 == null || controller2 == null) {
             initController();
         }
-        controller.TriggerPressed += grabHandler;
+    }
+
+    public void addGrippedListener(ControllerInteractionEventHandler gripHandler) {
+        checkControllers();
+        controller1.GripPressed += gripHandler;
+        controller2.GripPressed += gripHandler;
+    }
+
+    public void removeGrippedListener(ControllerInteractionEventHandler ungripHandler) {
+        checkControllers();
+        controller1.GripPressed -= ungripHandler;
+        controller2.GripPressed -= ungripHandler;
+    }
+
+    public void addGrabbedListener(ControllerInteractionEventHandler grabHandler) {
+        checkControllers();
+        controller1.TriggerPressed += grabHandler;
+        controller2.TriggerPressed += grabHandler;
     }
 
     public void addUngrabbedListener(ControllerInteractionEventHandler ungrabHandler) {
-        if (controller == null) {
-            initController();
-        }
-        controller.TriggerPressed += ungrabHandler;
+        checkControllers();
+        controller1.TriggerPressed += ungrabHandler;
+        controller2.TriggerPressed += ungrabHandler;
     }
 
     public void removeGrabbedListener(ControllerInteractionEventHandler grabHandler) {
-        if (controller == null) {
-            initController();
-        }
-        controller.TriggerPressed -= grabHandler;
+        checkControllers();
+        controller1.TriggerPressed -= grabHandler;
+        controller2.TriggerPressed -= grabHandler;
     }
     public void removeUngrabbedListener(ControllerInteractionEventHandler ungrabHandler) {
-        if (controller == null) {
-            initController();
-        }
-        controller.TriggerPressed -= ungrabHandler;
+        checkControllers();
+        controller1.TriggerPressed -= ungrabHandler;
+        controller2.TriggerPressed -= ungrabHandler;
     }
 
+    //TODO separate hands
     public bool useItem(GameObject item) {
         if (!isUsingItem) {
             usingItem = item;
