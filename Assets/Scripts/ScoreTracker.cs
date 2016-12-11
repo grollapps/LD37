@@ -3,9 +3,15 @@ using System.Collections;
 
 public class ScoreTracker : MonoBehaviour {
 
+    [SerializeField]
+    private TextMesh expTextValue;
+
+    [SerializeField]
+    private TextMesh cashTextValue;
+
     private static ScoreTracker instance;
 
-    private float cash = 0;
+    private float cash = 1000;
     private float exp = 0;
 
 
@@ -21,12 +27,22 @@ public class ScoreTracker : MonoBehaviour {
     }
 
 	void Start () {
-	
+        updateTexts();
 	}
+
+    private void updateTexts() {
+        expTextValue.text = exp.ToString("F0");
+        cashTextValue.text = "$"+cash.ToString("F2");
+    }
 	
 	void Update () {
 	
 	}
+
+    public void addCashAndExp(float cashVal, float expVal) {
+        addCash(cashVal);
+        addExp(expVal);
+    }
 
     public void addCash(float value) {
         cash += value;

@@ -114,10 +114,10 @@ public class Breakable : MonoBehaviour {
 
     }
 
-    //assume pen is +z
-    public void breakItDown(float penDist) {
+    //assume pen is +z. Returned game objects will be of type piecePrefab (if any)
+    public GameObject[] breakItDown(float penDist) {
         if (fullComputed) {
-            return;
+            return null;
         }
         if (spawnLayers == null) {
             computeDivisions();
@@ -125,21 +125,23 @@ public class Breakable : MonoBehaviour {
         int numPenLayers = Mathf.Min(spawnLayers[0].Length, Mathf.CeilToInt(Mathf.Abs(penDist) / zSize)); //round up/down/all around?
         breakItDownByLayer(numPenLayers);
         fullComputed = true;
-        if (pieces != null) {
-            for (int i = 0; i < pieces.Length; i++) {
-                if (pieces[i] != null) {
-                    Breakable brb = pieces[i].GetComponent<Breakable>();
-                    if (brb != null) {
-                        brb.breakItDown(penDist); //TODO calc correct value
-                    }
-                }
-            }
-        }
+//        if (pieces != null) {
+//            for (int i = 0; i < pieces.Length; i++) {
+//                if (pieces[i] != null) {
+//                    Breakable brb = pieces[i].GetComponent<Breakable>();
+//                    if (brb != null) {
+//                        brb.breakItDown(penDist); //TODO calc correct value
+//                    }
+//                }
+//            }
+        //}
+        return pieces;
     }
 
     private void breakItDownByLayer(int numPenLayers) {
         Vector3 pos = transform.position;
         GameObject parent = new GameObject();
+        parent.name = "breakable parent";
         parent.transform.position = transform.position;
         int pieceCount = numPenLayers * spawnLayers[0].Length;
         //Debug.Log("Piececount=" + pieceCount);
@@ -151,6 +153,7 @@ public class Breakable : MonoBehaviour {
             Vector3[] spawnPts = spawnLayers[z];
             for (int i = 0; i < spawnPts.Length; i++) {
                 GameObject go = (GameObject)Instantiate(piecePrefab, spawnPts[i], Quaternion.identity);
+                go.GetComponent<Rigidbody>().isKinematic = true;
                 go.transform.SetParent(parent.transform, false);
                 pieces[pidx++] = go;
             }
@@ -167,6 +170,7 @@ public class Breakable : MonoBehaviour {
             scaleParent.transform.position = gameObject.transform.position + new Vector3(0, 0, zscale / 2); //edge 
 
             GameObject solid = (GameObject)Instantiate(gameObject, Vector3.zero, Quaternion.identity);
+            solid.GetComponent<Rigidbody>().isKinematic = true;
             solid.transform.SetParent(scaleParent.transform, true);
             solid.transform.position = transform.position;
 
@@ -174,13 +178,21 @@ public class Breakable : MonoBehaviour {
             scaleParent.transform.localScale = new Vector3(1, 1, newScale); //assume whole number of scale units per block
             solid.transform.localRotation = transform.localRotation;
             scaleParent.transform.DetachChildren();
+            solid.GetComponent<Rigidbody>().isKinematic = false; //
             //solid.transform.SetParent(parent.transform, true); //doesn't work correctly - moves obj over?
             Destroy(scaleParent);
         }
 
         parent.transform.localRotation = transform.rotation; //match to original rotation of the object we are replacing
+        for (int i = 0; i < pieces.Length; i++) {
+            if (pieces[i] != null) {
+                pieces[i].GetComponent<Rigidbody>().isKinematic = false;
+            }
+        }
 
-        transform.position = new Vector3(pos.x, pos.y, pos.z - 250); //put this somewhere else for now
+        //this is the piece that was replaced...put this somewhere else for now
+        gameObject.GetComponent<Rigidbody>().isKinematic = true;
+        transform.position = new Vector3(pos.x, pos.y, pos.z - 1000); 
         //Destroy(gameObject);
     }
 

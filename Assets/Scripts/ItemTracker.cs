@@ -53,37 +53,37 @@ public class ItemTracker : MonoBehaviour {
 
     public void addGrippedListener(ControllerInteractionEventHandler gripHandler) {
         checkControllers();
-        controller1.GripPressed += gripHandler;
-        controller2.GripPressed += gripHandler;
+        if(controller1 != null) controller1.GripPressed += gripHandler;
+        if(controller2 != null) controller2.GripPressed += gripHandler;
     }
 
     public void removeGrippedListener(ControllerInteractionEventHandler ungripHandler) {
         checkControllers();
-        controller1.GripPressed -= ungripHandler;
-        controller2.GripPressed -= ungripHandler;
+        if(controller1 != null) controller1.GripPressed -= ungripHandler;
+        if(controller2 != null) controller2.GripPressed -= ungripHandler;
     }
 
     public void addGrabbedListener(ControllerInteractionEventHandler grabHandler) {
         checkControllers();
-        controller1.TriggerPressed += grabHandler;
-        controller2.TriggerPressed += grabHandler;
+        if(controller1 != null) controller1.TriggerPressed += grabHandler;
+        if(controller2 != null) controller2.TriggerPressed += grabHandler;
     }
 
     public void addUngrabbedListener(ControllerInteractionEventHandler ungrabHandler) {
         checkControllers();
-        controller1.TriggerPressed += ungrabHandler;
-        controller2.TriggerPressed += ungrabHandler;
+        if(controller1 != null) controller1.TriggerPressed += ungrabHandler;
+        if(controller2 != null) controller2.TriggerPressed += ungrabHandler;
     }
 
     public void removeGrabbedListener(ControllerInteractionEventHandler grabHandler) {
         checkControllers();
-        controller1.TriggerPressed -= grabHandler;
-        controller2.TriggerPressed -= grabHandler;
+        if(controller1 != null) controller1.TriggerPressed -= grabHandler;
+        if(controller2 != null) controller2.TriggerPressed -= grabHandler;
     }
     public void removeUngrabbedListener(ControllerInteractionEventHandler ungrabHandler) {
         checkControllers();
-        controller1.TriggerPressed -= ungrabHandler;
-        controller2.TriggerPressed -= ungrabHandler;
+        if(controller1 != null) controller1.TriggerPressed -= ungrabHandler;
+        if(controller2 != null) controller2.TriggerPressed -= ungrabHandler;
     }
 
     //TODO separate hands

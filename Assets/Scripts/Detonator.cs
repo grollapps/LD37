@@ -7,7 +7,7 @@ public class Detonator : VRTK_InteractableObject {
     private bool hasFired = false;
 
     public override void StartUsing(GameObject currentUsingObject) {
-        base.StartUsing(currentUsingObject);
+        //base.StartUsing(currentUsingObject);
         if (!hasFired) {
             fire();
         }
@@ -17,7 +17,7 @@ public class Detonator : VRTK_InteractableObject {
         hasFired = true;
         Debug.Log("Detonator firing");
         //TODO only fire connected explosives
-
+        //TODO coroutine this?
         GameObject[] exps = GameObject.FindGameObjectsWithTag("Explosive");
         if (exps.Length == 0) {
             Debug.Log("No explosives to detonate!");
