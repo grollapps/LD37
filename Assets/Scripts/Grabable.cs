@@ -19,14 +19,18 @@ public class Grabable : MonoBehaviour {
 
     public void Grabbed(object sender, ControllerInteractionEventArgs e) {
         ItemTracker.getInstance().removeGrabbedListener(this.Grabbed);
-        Grabbed(((VRTK_ControllerEvents)sender).gameObject);
+        GameObject grabber = ((VRTK_ControllerEvents)sender).gameObject;
+        if (testCollision(grabber)) {
+            Grabbed(grabber);
+            }
     }
     public void Ungrabbed(object sender, ControllerInteractionEventArgs e) {
         ItemTracker.getInstance().removeUngrabbedListener(this.Ungrabbed);
-        Ungrabbed(null);
+        GameObject grabber = ((VRTK_ControllerEvents)sender).gameObject;
+        Ungrabbed(grabber);
     }
 
-    public void Grabbed(GameObject currentGrabbingObject) {
+    public virtual void Grabbed(GameObject currentGrabbingObject) {
         //if (Time.time - lastUngrabTime > grabThresholdTime) {
         ItemTracker itt = ItemTracker.getInstance();
         if (itt.useItem(gameObject)) {
@@ -38,18 +42,9 @@ public class Grabable : MonoBehaviour {
         } else {
             Debug.Log("Couldn't grab " + gameObject.name);
         }
-        //rumble appears to not be implemented yet
-        //VRTK_ControllerActions actions = currentGrabbingObject.GetComponent<VRTK_ControllerActions>();
-        //if (actions != null) {
-        //actions.TriggerHapticPulse((ushort)rumbleOnGrab.y, rumbleOnGrab.x, 0.001f); //TODO only trigger on grab
-        //} else {
-        //Debug.Log("Actions null");
-        //}
-        //}
-
     }
 
-    public void Ungrabbed(GameObject previousGrabbingObject) {
+    public virtual void Ungrabbed(GameObject previousGrabbingObject) {
         Debug.Log("Ungrabbed");
         ItemTracker itt = ItemTracker.getInstance();
         if (itt.stopUsingItem()) {
@@ -73,4 +68,17 @@ public class Grabable : MonoBehaviour {
 
     }
 
+    private bool testCollision(GameObject other) {
+        Collider[] otherC = other.GetComponentsInChildren<Collider>();
+        if (otherC != null) {
+            for (int i = 0; i < otherC.Length; i++) {
+                Collider oc = otherC[i];
+                Collider myC = GetComponent<Collider>();
+                if (myC.bounds.Intersects(oc.bounds)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

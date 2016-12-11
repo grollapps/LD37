@@ -22,8 +22,10 @@ public class ItemTracker : MonoBehaviour {
     }
 
     private void initController() {
-        controllerGo = GameObject.Find("Controller (right)");
-        controller = controllerGo.GetComponent<VRTK_ControllerEvents>();
+        controllerGo = GameObject.Find("Controller (left)"); //TODO both hands
+        if (controllerGo != null) {
+            controller = controllerGo.GetComponent<VRTK_ControllerEvents>();
+        }
     }
 
 

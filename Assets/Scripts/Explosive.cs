@@ -58,6 +58,7 @@ public class Explosive : MonoBehaviour {
                     frec.takeHit(dirTowardsObj, blastPressure, dist);
                 }
             }
+            Destroy(gameObject);
         } 
 
     }
