@@ -6,39 +6,83 @@ public class ObjectPool : MonoBehaviour {
 
     private static ObjectPool instance;
 
-    class Tuple {
-        public Breakable.ObjType outer;
-        public Breakable.ObjType inner;
-        public Vector3[][] spawnLayers; //Z layers
-    }
+    private List<ForceReceiver> forceReceivers = new List<ForceReceiver>(2048);
+    private List<Breakable> breakables = new List<Breakable>(1024);
 
-    private List<Tuple> tuples = new List<Tuple>();
+    //class Tuple {
+    //    public Breakable.ObjType outer;
+    //    public Breakable.ObjType inner;
+    //    public Vector3[][] spawnLayers; //Z layers
+    //}
+
+    //private List<Tuple> tuples = new List<Tuple>();
 
     public void Awake() {
         instance = this;
     }
 
-    public ObjectPool getInstance() {
+    public static ObjectPool getInstance() {
         if (instance == null) {
             Debug.Log("No instance for ObjectPool. Make sure it is on an object in the scene");
         }
         return instance;
     }
 
-    public Vector3[][] getLayerData(Breakable.ObjType outerType, Breakable.ObjType innerType) {
-        for (int i = 0; i < tuples.Count; i++) {
-            Tuple t = tuples[i];
-            if (t.outer.Equals(outerType) && t.inner.Equals(innerType)) {
-                return t.spawnLayers;
+    public void AddForceReceivers(IEnumerable<GameObject> frs) {
+        foreach (GameObject go in frs) {
+            ForceReceiver fr = go.GetComponent<ForceReceiver>();
+            if (fr != null) {
+                forceReceivers.Add(fr);
+            }
+            Breakable br = go.GetComponent<Breakable>();
+            if (br != null) {
+                breakables.Add(br);
             }
         }
-        return null;
+        //Debug.Log("Total objects in pool: " + forceReceivers.Count);
     }
 
-    public void setLayerData(Breakable.ObjType outerType, Breakable.ObjType innerType, Vector3[][] data) {
-        Tuple t = new Tuple();
-        t.outer = outerType;
-        t.inner = innerType;
-        t.spawnLayers = data;
+    public void cleanupAll() {
+        StartCoroutine(cleanupAllCo());
     }
+
+    private IEnumerator cleanupAllCo() {
+        int blockSize = 500;
+        for (int i = 0; i < breakables.Count; i++) {
+            if (breakables[i] != null) {
+                breakables[i].cleanup();
+            }
+            if ((i + 1) % blockSize == 0) {
+                yield return null;
+            }
+        }
+        for (int i = 0; i < forceReceivers.Count; i++) {
+            if (forceReceivers[i] != null) {
+                forceReceivers[i].cleanup();
+            }
+            if ((i + 1) % blockSize == 0) {
+                yield return null;
+            }
+        }
+
+        //perfModeOn();
+    }
+
+//    public void swapColliders() {
+//        for (int i = 0; i < forceReceivers.Count; i++) {
+//            if (forceReceivers[i] != null) {
+//                forceReceivers[i].forceCollider.enabled = true;
+//                forceReceivers[i].forceRidgidbody.isKinematic = false;
+//            }
+//        }
+//    }
+
+//    public void perfModeOn() {
+//        for (int i = 0; i < forceReceivers.Count; i++) {
+//            if (forceReceivers[i] != null) {
+//                forceReceivers[i].forceCollider.enabled = false;
+//                forceReceivers[i].forceRidgidbody.isKinematic = true;
+//            }
+//        }
+//    }
 }

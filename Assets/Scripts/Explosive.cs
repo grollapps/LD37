@@ -10,13 +10,17 @@ public class Explosive : MonoBehaviour {
     private float blastPressure = 100.0f;
     [SerializeField]
     private GameObject particleSystemObj;
+    private ParticleSystem psObj;
 
     private List<Collider> affectedColliders = new List<Collider>(1024);
     private bool fragCalculated = false;
     private bool hasExploded = false;
 
     void Start() {
-
+        if (particleSystemObj != null) {
+            GameObject obj = (GameObject)Instantiate(particleSystemObj);
+            psObj = obj.GetComponent<ParticleSystem>();
+        }
     }
 
     void Update() {
@@ -33,9 +37,9 @@ public class Explosive : MonoBehaviour {
     public void preDetonate() {
         if (!fragCalculated) {
             fragCalculated = true;
-            Debug.Log("FragCalc");
+            //Debug.Log("FragCalc");
             StartCoroutine(calcFrag());
-            Debug.Log("FragCalcDone");
+            //Debug.Log("FragCalcDone");
         }
     }
 
@@ -44,16 +48,14 @@ public class Explosive : MonoBehaviour {
         if (!hasExploded) {
             hasExploded = true;
             //this will now find all new pieces
-            Debug.Log("Explode: " + gameObject.name);
-            if (particleSystemObj != null) {
-                GameObject psObj = (GameObject)Instantiate(particleSystemObj);
+            //Debug.Log("Explode: " + gameObject.name);
+            if (psObj != null) {
                 psObj.transform.position = transform.position;
-                ParticleSystem p = psObj.GetComponent<ParticleSystem>();
-                p.Play();
-                Destroy(psObj, p.startLifetime + p.duration + 0.5f);
+                psObj.Play();
+                Destroy(psObj, psObj.startLifetime + psObj.duration + 0.5f);
             }
             StartCoroutine(doBlast());
-            Debug.Log("ExplodeCalcDone");
+            //Debug.Log("ExplodeCalcDone");
             Destroy(gameObject);
         }
 
@@ -98,6 +100,7 @@ public class Explosive : MonoBehaviour {
                     yield return null;
                 }
             }
+            //yield return null;
             for (int i = 0; i < affectedColliders.Count; i++) {
                 GameObject go = affectedColliders[i].gameObject;
                 ForceReceiver frec = go.GetComponent<ForceReceiver>();

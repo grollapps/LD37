@@ -23,10 +23,14 @@ public class Detonator : VRTK_InteractableObject {
     }
 
     private void fire() {
+        StartCoroutine(fireCo());
+    }
+
+    private IEnumerator fireCo() {
         hasFired = true;
         Debug.Log("Detonator firing");
         //TODO only fire connected explosives
-        //TODO coroutine this?
+        //prepObjs();
         GameObject[] exps = GameObject.FindGameObjectsWithTag("Explosive");
         if (exps.Length == 0) {
             Debug.Log("No explosives to detonate!");
@@ -37,14 +41,26 @@ public class Detonator : VRTK_InteractableObject {
                     e.preDetonate();
                 }
             }
+                    yield return null;
             for (int i = 0; i < exps.Length; i++) {
                 Explosive e = exps[i].GetComponent<Explosive>();
                 if (e != null) {
                     e.detonate();
                 }
             }
+                    yield return null;
         }
 
+        cleanupCrew();
+    }
+
+    private void prepObjs() {
+        //ObjectPool.getInstance().swapColliders();
+    }
+
+    private void cleanupCrew() {
+        Debug.Log("Cleaning up");
+        ObjectPool.getInstance().cleanupAll();
     }
 
 }

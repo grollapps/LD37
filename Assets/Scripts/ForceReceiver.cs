@@ -20,9 +20,14 @@ public class ForceReceiver : MonoBehaviour {
     private Vector3 force = Vector3.zero;
     private Vector3 forcePos = Vector3.zero;
 
+    //public Collider forceCollider;
+    //public Rigidbody forceRidgidbody;
 
-    void Start() {
+    void Awake() {
         remainingForceFrames = numForceFrames;
+        //Debug.Log("Remaining force=" + remainingForceFrames);
+        //forceCollider = gameObject.GetComponent<Collider>();
+        //forceRidgidbody = gameObject.GetComponent<Rigidbody>();
     }
 
     void Update() {
@@ -36,9 +41,9 @@ public class ForceReceiver : MonoBehaviour {
     void FixedUpdate() {
 
         if (!used && forceCalculated) {
-            if (numForceFrames > 0) {
+            if (remainingForceFrames > 0) {
                 applyForce(force, forcePos); //TODO does the force pos need to change per frame?
-                numForceFrames--;
+                remainingForceFrames--;
             } else {
                 //forceCalculated = false;
                 used = true;
@@ -58,9 +63,6 @@ public class ForceReceiver : MonoBehaviour {
     /// but does not move anything.
     /// </summary>
     public List<Collider> calcFrag(Vector3 forceDir, float force, Vector3 forceOrigin) {
-        //Debug.Log("Hit taken: force=" + force + " dist=" + distFromSrc);
-        //this.force = forceDir * (force / distFromSrc);
-        //this.forcePos = transform.position;
 
         Breakable brb = GetComponent<Breakable>();
         List<Collider> fragResults;
@@ -70,7 +72,7 @@ public class ForceReceiver : MonoBehaviour {
             if (objType.Equals(Breakable.ObjType.BIG)) {
                 fragResults = new List<Collider>(1024);
             } else {
-                fragResults = new List<Collider>(10);
+                fragResults = new List<Collider>(16);
             }
         }
 
@@ -78,8 +80,6 @@ public class ForceReceiver : MonoBehaviour {
             //this object is breakable. Use the force to break it up.
             float minPwrToBreak = brb.getMinActivePwr();
             float falloffDist = Mathf.Sqrt(force / minPwrToBreak);
-            //Debug.Log("Falloff dist=" + falloffDist + ", distFromSrc=" + distFromSrc/2);
-            //GameObject[] fragments = brb.breakItDown(falloffDist - distFromSrc / 2);
             List<GameObject> fragments = brb.breakItDown(forceDir, force, forceOrigin);
             if (fragments != null) {
                 for (int i = 0; i < fragments.Count; i++) {
@@ -115,6 +115,7 @@ public class ForceReceiver : MonoBehaviour {
 
     }
 
+    //all force input has arrived, average it
     public void hitsComplete() {
         forceGathered = true;
         if (forces.Count > 0) {
@@ -139,5 +140,16 @@ public class ForceReceiver : MonoBehaviour {
         if (v != null) {
             ScoreTracker.getInstance().addCashAndExp(v.cashValue, v.expValue);
         }
+    }
+
+    public void cleanup() {
+        remainingForceFrames = numForceFrames;
+        forceCalculated = false;
+        forceGathered = false;
+        used = false;
+        forces.Clear();
+        forcePoses.Clear();
+        force = Vector3.zero;
+        forcePos = Vector3.zero;
     }
 }
