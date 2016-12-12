@@ -8,6 +8,9 @@ public class InventoryItem : VRTK_InteractableObject {
     [SerializeField]
     private GameObject itemPrefab; //item that will be spawned when using this inventory item
 
+    [SerializeField]
+    private float unlockCost = 0;
+
     private GameObject itemInstance;
 
 	protected override void Start () {
