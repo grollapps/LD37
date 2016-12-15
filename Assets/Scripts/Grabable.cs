@@ -56,12 +56,14 @@ public class Grabable : MonoBehaviour {
         Collider[] hits = Physics.OverlapSphere(transform.position, placementRadiusCheck);
         Debug.Log(hits.Length + " placement hits");
         for (int i = 0; i < hits.Length; i++) {
-            GameObject go = hits[i].gameObject;
-            PlacePoint goPp = go.GetComponent<PlacePoint>();
-            if (goPp != null) {
-                if (goPp.place(gameObject, gameObject.transform.position)) {
-                    Debug.Log("Placement found");
-                    break;
+            if (hits[i] != null) {
+                GameObject go = hits[i].gameObject;
+                PlacePoint goPp = go.GetComponent<PlacePoint>();
+                if (goPp != null) {
+                    if (goPp.place(gameObject, gameObject.transform.position)) {
+                        Debug.Log("Placement found");
+                        break;
+                    }
                 }
             }
         }

@@ -40,6 +40,10 @@ public class Cord : Grabable {
 
     private Cord getNextCord(bool stopStrand) {
         Cord newSectCord = null;
+        if (nextPiece != this.gameObject) {
+            //Grabbed a piece mid-strand
+            return null;
+        }
         if (!stopStrand) {
             GameObject newSection = (GameObject)Instantiate(this.gameObject);
             newSection.name = "cord " + Time.time;
@@ -59,6 +63,7 @@ public class Cord : Grabable {
         return newSectCord;
     }
 
+    //Called when the grip button is pressed
     public void Gripped(object sender, ControllerInteractionEventArgs e) {
         GameObject gripper = ((VRTK_ControllerEvents)sender).gameObject;
         ItemTracker.getInstance().removeGrippedListener(this.Gripped);
